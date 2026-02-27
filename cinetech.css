@@ -1,0 +1,375 @@
+/* reset global (On supprime les marges par défaut du navigateur pour avoir un rendu identique partout) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* varibles css(themes)
+   Centralisation des couleurs pour :
+   - thème sombre
+   - thème clair
+   - cohérence visuelle */
+:root {
+  --blue: #4f8cff;
+  --violet: #9b6bff;
+  --dark-bg: #0f1225;
+  --light-bg: #f6f1ed;
+  --dark-panel: #14162b;
+  --light-panel: #ffffff;
+  --card-bg-dark: rgba(255,255,255,0.07);
+  --card-bg-light: rgba(0,0,0,0.05);
+  --text-dark: #f5f1ee;
+  --text-light: #1e1e2f;
+}
+
+/* body(Structure globale et transition de thème) */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top, #1b1f3b, var(--dark-bg));
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* mode clair activé depuis le js */
+body.light {
+  background: var(--light-bg);
+  color: var(--text-light);
+}
+
+/* header fixe(la bar du top) */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #14162b, #0b0d1a);
+  z-index: 1000;
+}
+
+/* header en mode clair */
+body.light .top-header {
+  background: linear-gradient(180deg, #ffffff, #e9e9e9);
+}
+
+/* bouton menu (toggle) */
+.top-header button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+/* titre du site(CineTech) */
+.site-title {
+  font-family: 'Cinzel', serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+}
+
+/* couleurs séparées pour l’effet du titreCineTech */
+.cine { color: var(--blue); }
+.tech {
+  color: var(--violet);
+  text-shadow: 0 0 15px rgba(155,107,255,0.7);
+}
+
+/* barre de recherche globale */
+.global-search {
+  position: fixed;
+  top: 80px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 900;
+}
+
+.global-search input {
+  width: 420px;
+  padding: 14px 20px;
+  border-radius: 30px;
+  border: 1px solid var(--blue);
+  background: rgba(255,255,255,0.1);
+  color: inherit;
+  outline: none;
+}
+
+/* sidebar */
+.sidebar {
+  width: 230px;
+  margin-top: 120px;
+  background: linear-gradient(180deg, var(--dark-panel), #0b0d1a);
+  padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  transition: transform 0.4s ease, background 0.4s;
+  z-index: 900;
+}
+
+/* sidebar en mode clair */
+body.light .sidebar {
+  background: linear-gradient(180deg, var(--light-panel), #eaeaea);
+}
+
+/* Sidebar fermée */
+.sidebar:not(.active) {
+  transform: translateX(-100%);
+}
+
+/* les boutons du menu */
+.sidebar button {
+  background: transparent;
+  border: 1px solid rgba(79,140,255,0.6);
+  color: inherit;
+  padding: 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* effet hover sur les boutons du menu */
+.sidebar button:hover {
+  background: rgba(79,140,255,0.2);
+  transform: translateX(6px);
+}
+
+/* main */
+main {
+  flex: 1;
+  margin-top: 140px;
+  margin-left: 230px;
+  padding: 30px;
+  transition: margin-left 0.4s;
+}
+
+/* ajustement quand sidebar est fermée */
+.sidebar:not(.active) ~ main {
+  margin-left: 0;
+}
+
+/* sections SPA(affichage dynamique) */
+.section { display: none; }
+.section.active { display: block; }
+
+/* les titres des sections */
+.section h2 {
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+
+/* KPI(dashboard) */
+.kpi {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  flex: 1;
+  padding: 25px;
+  border-radius: 18px;
+  background: var(--card-bg-dark);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* cartes en mode clair */
+body.light .card {
+  background: var(--card-bg-light);
+}
+
+/* animation au survol des cartes KPI */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(155,107,255,0.5);
+}
+
+/* chiffres KPI dans les cartes */
+.card span {
+  font-size: 36px;
+  color: var(--blue);
+}
+
+/* formulaires et outils(style unifié) */
+form, .tools {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+form input,
+form select,
+.tools input,
+.tools select,
+#directorSearch {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(79,140,255,0.5);
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
+/* bouton du formulaire */
+form button {
+  padding: 12px 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* les films(s'affichent horizontalement) */
+.film-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.film-card {
+  display: flex;
+  gap: 20px;
+  background: var(--card-bg-dark);
+  padding: 15px;
+  border-radius: 18px;
+  transition: 0.3s;
+}
+
+body.light .film-card {
+  background: var(--card-bg-light);
+}
+
+/* l'image de l'affiche de film */
+.film-card img {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #000;
+}
+
+/* animation de l'affiche de film */
+.film-card:hover {
+  transform: translateX(8px);
+  box-shadow: 0 0 20px rgba(155,107,255,0.5);
+}
+
+/* liste(realisateur) */
+ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* le message "aucun résultat" */
+.not-found {
+  margin: 20px 0;
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.hidden { display: none; }
+
+/* popup modal(style unifié) */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.popup.hidden { display: none; }
+
+.popup-box {
+  background: var(--dark-panel);
+  padding: 30px;
+  border-radius: 20px;
+  width: 320px;
+  text-align: center;
+}
+
+/* popup en mode clair */
+body.light .popup-box {
+  background: #fff;
+}
+
+/* les boutons popup */
+.popup-actions button {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--blue), var(--violet));
+  color: #fff;
+  font-weight: bold;
+}
+.popup-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* le bouton danger(annuler) */
+.popup-actions .danger {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+/* footer */
+.footer-safe {
+  background: linear-gradient(180deg, #0b0d1a, #000);
+  padding: 30px;
+  text-align: center;
+  margin-left: 230px;
+  transition: margin-left 0.4s;
+}
+
+/* footer quand sidebar se ferme */
+.sidebar:not(.active) ~ .footer-safe {
+  margin-left: 0;
+}
+
+/* footer clair */
+body.light .footer-safe {
+  background: #eaeaea;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+footer h4 {
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+
+footer p {
+  opacity: 0.8;
+  font-size: 14px;
+}

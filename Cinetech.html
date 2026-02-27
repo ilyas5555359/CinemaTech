@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!-- encodage UTF-8 pour supporter les caracteres français -->
+  <meta charset="UTF-8">
+  <!-- titre qui s'affiche dans l’onglet du navigateur -->
+  <title>CineTech</title>
+
+  <!-- le lien vers le fichier CSS du projet -->
+  <link rel="stylesheet" href="cinetech.css">
+  <!-- icones Font Awesome (menu, films, utilisateurs, ...) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Police Cinzel utilisée pour le logo CineTech -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- popup global utilisé pour :
+     - le message de confirmations (suppression)
+     - les messages d’erreur
+     - les messages de succès -->
+<div id="popup" class="popup hidden">
+  <div class="popup-box">
+    <!-- le message dynamique injecté en JavaScript -->
+    <p id="popupMessage"></p>
+    <!-- les boutons de confirmation et d'annulation -->
+    <div class="popup-actions">
+      <button id="popupConfirm">OK</button>
+      <button id="popupCancel" class="danger">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- header fixe contient :
+     - bouton menu pour sidebar (toggle)
+     - logo CineTech -->
+<header class="top-header">
+  <!-- bouton pour ouvrir et fermer la sidebar -->
+  <button id="toggleSidebar"><i class="fas fa-bars"></i></button>
+  <!-- le logo du site -->
+  <h1 class="site-title">
+    <span class="cine">CINE</span><span class="tech">TECH</span>
+  </h1>
+</header>
+
+<!-- la barre de recherche globale (recherche les films plus les realisateurs en même temps -->
+<div class="global-search">
+  <input type="text" id="globalSearch" placeholder="Rechercher films ou réalisateurs...">
+</div>
+
+<!-- sidebar(navigation SPA (sans rechargement)) -->
+<aside class="sidebar active">
+  <button onclick="showSection('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</button>
+  <button onclick="showSection('films')"><i class="fas fa-film"></i> Films</button>
+  <button onclick="showSection('directors')"><i class="fas fa-user-tie"></i> Réalisateurs</button>
+  <button onclick="showSection('auth')"><i class="fas fa-user"></i> Auth</button>
+  <button onclick="toggleTheme()">Mode 🌙 / ☀️</button>
+</aside>
+
+<!-- main,chaque section est s'affiche et se cache dynamiquement -->
+<main>
+
+  <!-- dashboard-->
+<section id="dashboard" class="section active">
+  <h2>Dashboard</h2>
+
+  <!-- cartes KPI cliquables -->
+  <div class="kpi">
+    <div class="card clickable" onclick="showSection('films')">
+      🎬 Films <span id="totalFilms">0</span>
+    </div>
+    <div class="card clickable" onclick="showSection('directors')">
+      🎥 Réalisateurs <span id="totalDirectors">0</span>
+    </div>
+  </div>
+
+  <!-- graphique Chart.js -->
+  <canvas id="filmsChart"></canvas>
+</section>
+
+<!-- films -->
+<section id="films" class="section">
+  <h2>Gestion des Films</h2>
+
+  <!-- outils(recherche, tri) -->
+  <div class="tools">
+    <input type="text" id="filmSearch" placeholder="Rechercher un film...">
+    <select id="filmSort">
+      <option value="">Trier</option>
+      <option value="az">A–Z</option>
+      <option value="za">Z–A</option>
+      <option value="year">Année</option>
+      <option value="rating">Rating</option>
+    </select>
+  </div>
+
+  <!-- formulaire d'ajout et de modification des films -->
+  <form id="filmForm">
+    <input type="hidden" id="editIndex">
+    <input type="text" id="title" placeholder="Titre" required>
+    <input type="number" id="year" placeholder="Année" required>
+    <input type="text" id="genre" placeholder="Genre">
+    <!-- liste des réalisateurs deja synchronisée -->
+    <select id="filmDirector">
+      <option value="">Réalisateur</option>
+    </select>
+    <input type="number" step="0.1" min="0" max="10" id="rating" placeholder="Rating (0–10)">
+    <input type="text" id="poster" placeholder="Lien de l'affiche (optionnel)">
+    <button>Enregistrer</button>
+  </form>
+
+  <!-- message en cas d'aucun film trouvé -->
+  <div id="filmNotFound" class="not-found hidden">❌ Aucun film trouvé</div>
+  <!-- la liste des films -->
+  <div class="film-horizontal" id="filmList"></div>
+</section>
+
+<!-- realisateurs -->
+<section id="directors" class="section">
+  <h2>Réalisateurs</h2>
+
+  <input type="text" id="directorSearch" placeholder="Rechercher un réalisateur...">
+
+  <form id="directorForm">
+    <input type="hidden" id="directorEditIndex">
+    <input type="text" id="directorName" placeholder="Nom du réalisateur" required>
+    <button>Enregistrer</button>
+  </form>
+
+  <div id="directorNotFound" class="not-found hidden">❌ Aucun réalisateur trouvé</div>
+  <ul id="directorList"></ul>
+</section>
+
+<!-- authentification(login ou inscription) -->
+<section id="auth" class="section">
+  <h2>Authentification</h2>
+
+  <!-- login -->
+  <form id="loginForm">
+    <h3>Connexion</h3>
+    <input type="text" id="loginUser" placeholder="Username" required>
+    <input type="password" id="loginPass" placeholder="Password" required>
+    <button>Se connecter</button>
+  </form>
+
+  <!-- inscription -->
+  <form id="registerForm">
+    <h3>Inscription</h3>
+    <input type="text" id="registerUser" placeholder="Username" required>
+    <input type="password" id="registerPass" placeholder="Password" required>
+    <button>S'inscrire</button>
+  </form>
+</section>
+
+</main>
+
+<!-- footer(s'ajuste automatiquement avec la sidebar) -->
+<footer class="footer-safe">
+  <div class="footer-content">
+    <div>
+      <h4>CineTech</h4>
+      <p>Plateforme académique de gestion de films et réalisateurs.</p>
+    </div>
+
+    <div>
+      <h4>Contact</h4>
+      <p>Email : ContactCinetech@gmail.com</p>
+      <p>Tél : +212 7 XX XX XX XX</p>
+    </div>
+
+    <div>
+      <h4>Liens</h4>
+      <p>Support client</p>
+      <p>Mentions légales</p>
+      <p>Conditions d’utilisation</p>
+    </div>
+  </div>
+
+  <p class="copyright">
+    © 2025 CineTech — Projet académique — Tous droits réservés
+  </p>
+</footer>
+
+<!-- le lien vers le fichier javascript du projet(order important) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="Javascript/NavigationSPA.js"></script>
+<script src="Javascript/Films.js"></script>
+<script src="Javascript/Realisateurs.js"></script>
+<script src="Javascript/Dashboard.js"></script>
+<script src="Javascript/API.js"></script>
+<script src="Javascript/auth.js"></script>
+
+</body>
+</html>
